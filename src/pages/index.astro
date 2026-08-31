@@ -1,0 +1,341 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Repos from '../components/Repos.astro';
+import T from '../components/T.astro';
+import {
+  profile,
+  skills,
+  projects,
+  experience,
+  education,
+  awards,
+  interests,
+  GITHUB_USER,
+} from '../data/site.js';
+
+const ghUrl = `https://github.com/${GITHUB_USER}`;
+const year = new Date().getFullYear();
+---
+
+<Base>
+  <a href="#main" class="skip"><T zh="跳到主要内容" en="Skip to content" /></a>
+  <Nav />
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section id="about" class="hero">
+      <div class="wrap hero-grid">
+        <img class="hero-avatar" src={profile.avatar} alt={profile.name} width="116" height="116" />
+
+        <div class="hero-body">
+          <span class="badge">
+            <i class="dot"></i>
+            <T zh={profile.status.zh} en={profile.status.en} />
+          </span>
+
+          <h1>{profile.name}</h1>
+          <p class="hero-sub"><T zh={profile.tagline.zh} en={profile.tagline.en} /></p>
+          <p class="hero-intro"><T zh={profile.intro.zh} en={profile.intro.en} /></p>
+
+          <div class="hero-meta">
+            {profile.meta.map((m) => <span><T zh={m.zh} en={m.en} /></span>)}
+          </div>
+
+          <div class="hero-cta">
+            <button class="btn btn-primary js-email" type="button" data-u={profile.emailUser} data-d={profile.emailDomain}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m2 7 10 6 10-6"></path>
+              </svg>
+              <T zh="发邮件给我" en="Email me" />
+            </button>
+            <a class="btn" href={ghUrl} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.9 18.3 5.2 18.3 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"></path>
+              </svg>
+              GitHub
+            </a>
+          </div>
+
+          <ul class="now">
+            <li class="now-title" style="display:block">
+              <T zh="最近在忙" en="What I am doing now" />
+            </li>
+            {profile.now.map((n) => <li><T zh={n.zh} en={n.en} /></li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILLS ============ -->
+    <section id="skills">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">01</span>
+          <h2><T zh="技能" en="Skills" /></h2>
+          <span class="sec-note"><T zh="按熟练度排，不堆名词" en="Sorted by depth, not by name-dropping" /></span>
+        </div>
+
+        <div class="grid-2">
+          {
+            skills.map((g) => (
+              <div class="card card-hover reveal">
+                <div class="skill-head">
+                  <span class="skill-level"><T zh={g.level.zh} en={g.level.en} /></span>
+                  <span class="bars" aria-hidden="true">
+                    {[1, 2, 3].map((i) => <i class={i <= g.bars ? 'on' : ''} />)}
+                  </span>
+                </div>
+                <div class="tags">
+                  {g.items.map((s) => (
+                    <span class={g.bars === 3 ? 'tag tag-accent' : 'tag'}>
+                      <T zh={s.zh} en={s.en} />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section id="opensource">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">02</span>
+          <h2><T zh="开源作品" en="Open Source" /></h2>
+        </div>
+
+        <div class="proj">
+          {
+            projects.map((p) => (
+              <article class="card card-hover proj-card reveal">
+                <div class="proj-top">
+                  <h3><T zh={p.name.zh} en={p.name.en} /></h3>
+                  <span class="proj-role"><T zh={p.role.zh} en={p.role.en} /></span>
+                  <span class="proj-time">{p.time}</span>
+                </div>
+
+                <p class="proj-lead"><T zh={p.lead.zh} en={p.lead.en} /></p>
+
+                <div class="proj-block">
+                  <ul>
+                    {p.bullets.map((b) => <li><T zh={b.zh} en={b.en} /></li>)}
+                  </ul>
+                </div>
+
+                <div class="tags">
+                  {p.stack.map((s) => <span class="tag">{s}</span>)}
+                </div>
+
+                <div class="proj-foot">
+                  {
+                    p.link ? (
+                      <a class="link-arrow" href={p.link} target="_blank" rel="noopener">
+                        <T zh="查看源码" en="View source" />
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7 17 17 7M9 7h8v8"></path>
+                        </svg>
+                      </a>
+                    ) : (
+                      <span class="proj-private">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+                          <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                        </svg>
+                        <T zh={p.linkNote.zh} en={p.linkNote.en} />
+                      </span>
+                    )
+                  }
+                </div>
+              </article>
+            ))
+          }
+        </div>
+
+        <div class="reveal" style="margin-top:28px">
+          <span class="proj-label" style="margin-bottom:12px">
+            <T zh="全部仓库 · 实时拉自 GitHub" en="All repositories · pulled live from GitHub" />
+          </span>
+          <Repos />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EXPERIENCE ============ -->
+    <section id="experience">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="sec-num">03</span>
+          <h2><T zh="经历" en="Experience" /></h2>
+        </div>
+
+        <div class="card reveal">
+          <span class="proj-label"><T zh="工作" en="Work" /></span>
+          <div class="tl" style="margin-top:14px">
+            {
+              experience.map((e) => (
+                <div class="tl-item">
+                  <div class="tl-time">{typeof e.time === 'string' ? e.time : <T zh={e.time.zh} en={e.time.en} />}</div>
+                  <h3 class="tl-title">
+                    <T zh={e.title.zh} en={e.title.en} />
+                    <span class="tl-org"><T zh={e.org.zh} en={e.org.en} /></span>
+                  </h3>
+
+                  {
+                    e.bullets.length > 0 && (
+                      <ul>
+                        {e.bullets.map((b) => <li><T zh={b.zh} en={b.en} /></li>)}
+                      </ul>
+                    )
+                  }
+
+                  {
+                    e.project && (
+                      <div class="tl-proj">
+                        <div class="tl-proj-top">
+                          <strong><T zh={e.project.name.zh} en={e.project.name.en} /></strong>
+                          <span class="proj-role"><T zh={e.project.role.zh} en={e.project.role.en} /></span>
+                          <span class="proj-time">{e.project.time}</span>
+                        </div>
+
+                        <p class="proj-lead" style="margin:10px 0"><T zh={e.project.lead.zh} en={e.project.lead.en} /></p>
+
+                        <ul class="tl-proj-list">
+                          {e.project.bullets.map((b) => <li><T zh={b.zh} en={b.en} /></li>)}
+                        </ul>
+
+                        <div class="tags" style="margin-top:12px">
+                          {e.project.stack.map((t) => <span class="tag">{t}</span>)}
+                        </div>
+
+                        <span class="proj-private" style="margin-top:12px">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+                            <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                          </svg>
+                          <T zh={e.project.note.zh} en={e.project.note.en} />
+                        </span>
+                      </div>
+                    )
+                  }
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="grid-2" style="align-items:start;margin-top:16px">
+          <div class="card reveal">
+            <span class="proj-label"><T zh="教育" en="Education" /></span>
+            <div class="tl" style="margin-top:14px">
+              {
+                education.map((e) => (
+                  <div class="tl-item">
+                    <div class="tl-time">{typeof e.time === 'string' ? e.time : <T zh={e.time.zh} en={e.time.en} />}</div>
+                    <h3 class="tl-title">
+                      <T zh={e.title.zh} en={e.title.en} />
+                      <span class="tl-org"><T zh={e.org.zh} en={e.org.en} /></span>
+                    </h3>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <div class="card reveal">
+            <span class="proj-label"><T zh="荣誉" en="Awards" /></span>
+            <ul style="display:grid;gap:10px;margin-top:14px">
+              {
+                awards.map((a) => (
+                  <li class="award">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="8" r="6"></circle>
+                      <path d="M8.2 13.9 7 22l5-3 5 3-1.2-8.1"></path>
+                    </svg>
+                    <span><T zh={a.zh} en={a.en} /></span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <p class="sec-note reveal" style="margin-top:20px;text-align:center">
+          <T zh={interests.zh} en={interests.en} />
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact">
+      <div class="wrap">
+        <div class="card contact-card reveal">
+          <h2><T zh="聊聊？" en="Let us talk" /></h2>
+          <p>
+            <T
+              zh="对 AI 测试提效、质量工程，或者别的什么感兴趣，随时发邮件。"
+              en="Interested in AI-driven testing, quality engineering, or anything else — drop me a line."
+            />
+          </p>
+          <div class="contact-links">
+            <button class="btn btn-primary js-email" type="button" data-u={profile.emailUser} data-d={profile.emailDomain}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m2 7 10 6 10-6"></path>
+              </svg>
+              <span class="js-email-label"><T zh="发邮件给我" en="Email me" /></span>
+            </button>
+            <a class="btn" href={ghUrl} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.9 18.3 5.2 18.3 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"></path>
+              </svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;width:100%">
+      <span>© {year} {profile.name} · {profile.nameZh}</span>
+      <span><T zh="用 Astro 写的，托管在 GitHub Pages" en="Built with Astro, hosted on GitHub Pages" /></span>
+    </div>
+  </footer>
+
+  <script>
+    // 邮箱不以完整形式出现在 HTML 里，运行时才拼起来
+    document.querySelectorAll<HTMLElement>('.js-email').forEach((btn) => {
+      const addr = `${btn.dataset.u}@${btn.dataset.d}`;
+      btn.addEventListener('click', () => {
+        window.location.href = `mailto:${addr}`;
+      });
+      const label = btn.querySelector('.js-email-label');
+      if (label) label.textContent = addr;
+    });
+
+    // 滚动淡入
+    const items = document.querySelectorAll('.reveal');
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -8% 0px' }
+      );
+      items.forEach((el) => io.observe(el));
+    } else {
+      items.forEach((el) => el.classList.add('in'));
+    }
+  </script>
+</Base>

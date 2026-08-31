@@ -1,0 +1,6 @@
+---
+// 双语文本。中英各渲染一份，CSS 根据 html[data-lang] 隐藏另一份。
+// 这样无 JS 时也能正常显示中文，且切换语言零延迟。
+const { zh, en } = Astro.props;
+---
+<span data-l="zh" set:html={zh} /><span data-l="en" set:html={en} />

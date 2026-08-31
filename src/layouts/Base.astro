@@ -1,0 +1,51 @@
+---
+import { profile, SITE_URL } from '../data/site.js';
+import '../styles/global.css';
+
+const title = `${profile.name} · ${profile.tagline.zh}`;
+const description = profile.intro.zh;
+const ogImage = new URL('/avatar.jpg', SITE_URL).href;
+---
+
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={profile.name} />
+    <link rel="canonical" href={SITE_URL} />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>"
+    />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={SITE_URL} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161513" media="(prefers-color-scheme: dark)" />
+
+    <!-- 在首屏绘制前定好主题和语言，避免闪一下再切 -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') d.setAttribute('data-theme', t);
+          var l = localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
+          d.setAttribute('data-lang', l);
+          d.setAttribute('lang', l === 'en' ? 'en' : 'zh-CN');
+        } catch (e) {
+          /* 隐私模式下 localStorage 会抛异常，保持默认中文即可 */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

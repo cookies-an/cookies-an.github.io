@@ -1,0 +1,74 @@
+---
+import { GITHUB_USER } from '../data/site.js';
+---
+
+<div id="repo-grid" class="grid-3" data-user={GITHUB_USER}>
+  <div class="repo-skeleton"></div>
+  <div class="repo-skeleton"></div>
+  <div class="repo-skeleton"></div>
+</div>
+
+<script>
+  const grid = document.getElementById('repo-grid');
+  if (grid) {
+    const user = grid.dataset.user;
+
+    // GitHub 语言配色，取常见的几种，其余用主题色兜底
+    const LANG_COLOR: Record<string, string> = {
+      JavaScript: '#f1e05a',
+      TypeScript: '#3178c6',
+      Java: '#b07219',
+      Python: '#3572A5',
+      HTML: '#e34c26',
+      CSS: '#563d7c',
+      Go: '#00ADD8',
+      Shell: '#89e051',
+      Vue: '#41b883',
+      Astro: '#ff5d01',
+    };
+
+    const esc = (s: string) =>
+      s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
+
+    const fallback = () => {
+      grid.className = '';
+      grid.innerHTML =
+        `<p class="repo-fallback">` +
+        `<span data-l="zh">仓库列表加载失败（GitHub 接口有频率限制）。直接去 </span>` +
+        `<span data-l="en">Could not load repositories (GitHub API rate limit). Head to </span>` +
+        `<a class="link-arrow" href="https://github.com/${user}" target="_blank" rel="noopener">github.com/${user}</a>` +
+        `<span data-l="zh"> 看吧。</span><span data-l="en"> instead.</span></p>`;
+    };
+
+    fetch(`https://api.github.com/users/${user}/repos?sort=updated&per_page=100`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((repos) => {
+        const list = repos
+          // 排除 fork、归档，以及和用户名同名的 Profile README 仓库（它不是项目）
+          .filter((r: any) => !r.fork && !r.archived && r.name.toLowerCase() !== user?.toLowerCase())
+          .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count || (a.updated_at < b.updated_at ? 1 : -1))
+          .slice(0, 6);
+
+        if (!list.length) return fallback();
+
+        grid.innerHTML = list
+          .map((r: any) => {
+            const color = LANG_COLOR[r.language] || 'var(--accent)';
+            const lang = r.language
+              ? `<span class="repo-lang"><i class="dot" style="background:${color}"></i>${esc(r.language)}</span>`
+              : '';
+            const desc = r.description
+              ? esc(r.description)
+              : `<span data-l="zh">暂无描述</span><span data-l="en">No description</span>`;
+            return `<a class="card card-hover repo-card" href="${r.html_url}" target="_blank" rel="noopener">
+              <h4><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.5 2.5 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.5 2.5 0 0 1 4.5 9h8Z"/><path d="M5 12.25v3.25a.25.25 0 0 0 .4.2l1.45-1.087a.25.25 0 0 1 .3 0L8.6 15.7a.25.25 0 0 0 .4-.2v-3.25a.25.25 0 0 0-.25-.25h-3.5a.25.25 0 0 0-.25.25Z"/></svg>${esc(r.name)}</h4>
+              <p>${desc}</p>
+              <div class="repo-meta">${lang}<span>★ ${r.stargazers_count}</span><span>⑂ ${r.forks_count}</span></div>
+            </a>`;
+          })
+          .join('');
+        grid.className = 'grid-3';
+      })
+      .catch(fallback);
+  }
+</script>
